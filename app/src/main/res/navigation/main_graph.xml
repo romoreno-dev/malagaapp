@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_graph"
+    app:startDestination="@id/cameraListFragment">
+
+    <fragment
+        android:id="@+id/cameraListFragment"
+        android:name="com.romoreno.malagapp.ui.CameraListFragment"
+        android:label="fragment_camera_list"
+        tools:layout="@layout/fragment_camera_list" />
+    <fragment
+        android:id="@+id/cameraMapFragment"
+        android:name="com.romoreno.malagapp.ui.CameraMapFragment"
+        android:label="fragment_camera_map"
+        tools:layout="@layout/fragment_camera_map" />
+    <fragment
+        android:id="@+id/cameraGuessFragment"
+        android:name="com.romoreno.malagapp.ui.CameraGuessFragment"
+        android:label="fragment_camera_guess"
+        tools:layout="@layout/fragment_camera_guess" />
+</navigation>

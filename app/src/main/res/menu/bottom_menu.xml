@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/cameraListFragment"
+        android:title="@string/camera_list_menu"
+        android:icon="@drawable/ic_list" />
+    <item
+        android:id="@+id/cameraMapFragment"
+        android:title="@string/camera_map_menu"
+        android:icon="@drawable/ic_map" />
+    <item
+        android:id="@+id/cameraGuessFragment"
+        android:title="@string/camera_guess_menu"
+        android:icon="@drawable/ic_search" />
+</menu>
