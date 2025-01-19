@@ -97,8 +97,9 @@ dependencies {
     implementation(libs.google.location)
     implementation(libs.google.places)
 
-    // Glide
+    // Glide y PhotoView
     implementation(libs.bumptech.glide)
+    implementation(libs.photo.view)
 
     // Splash Screen Api
     implementation(libs.androidx.core.splashscreen)
