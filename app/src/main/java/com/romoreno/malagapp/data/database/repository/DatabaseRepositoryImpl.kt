@@ -1,0 +1,31 @@
+package com.romoreno.malagapp.data.database.repository
+
+import com.romoreno.malagapp.data.database.dao.CameraDao
+import com.romoreno.malagapp.data.database.entities.CameraEntity
+import com.romoreno.malagapp.data.database.entities.DistrictEntity
+import javax.inject.Inject
+
+class DatabaseRepositoryImpl @Inject constructor(private val cameraDao: CameraDao) : DatabaseRepository {
+
+    override suspend fun getCameraListByDistrictNumber(districtNumber: Int): List<CameraEntity> {
+        return cameraDao.getCameraListByDistrictNumber(districtNumber)
+    }
+
+    override suspend fun getAllCameraList(): List<CameraEntity> {
+        return cameraDao.getAllCameraList()
+    }
+
+    override suspend fun getDistrictList(): List<DistrictEntity> {
+        return cameraDao.getDistrictList()
+    }
+
+    override suspend fun insertCamera(entity: CameraEntity) {
+        cameraDao.insertCamera(entity)
+    }
+
+    override suspend fun insertCamera(entity: List<CameraEntity>?) {
+        if (entity != null) {
+            cameraDao.insertCamera(entity)
+        }
+    }
+}
