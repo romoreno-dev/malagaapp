@@ -23,7 +23,7 @@ data class CameraEntity (
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "address") val address: String,
-    @ColumnInfo(name = "url") val uel: String,
+    @ColumnInfo(name = "url") val url: String,
     @ColumnInfo(name = "latitude") val latitude: String,
     @ColumnInfo(name = "longitude") val longitude: String
 )
