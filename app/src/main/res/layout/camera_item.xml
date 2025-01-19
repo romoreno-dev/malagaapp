@@ -19,11 +19,22 @@
                 android:id="@+id/tvCameraTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
-                app:layout_constraintTop_toTopOf="parent"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/tvDistrict"
+                app:layout_constraintBottom_toTopOf="@id/tvDistrict"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="Camara de Trafico" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvDistrict"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="19sp"
+            android:textAllCaps="true"
+            app:layout_constraintTop_toBottomOf="@+id/tvCameraTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Distrito" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

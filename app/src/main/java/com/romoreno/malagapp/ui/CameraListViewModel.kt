@@ -2,6 +2,7 @@ package com.romoreno.malagapp.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.repository.DatabaseRepository
 import com.romoreno.malagapp.data.network.repository.CameraRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,12 +40,12 @@ class CameraListViewModel @Inject constructor(private val cameraRepository: Came
         viewModelScope.launch {
             _stateLoading.value = LoadingState.Loading
             val cameraList = withContext(Dispatchers.IO) {
-                var cameraList = databaseRepository.getAllCameraList()
+                var cameraList = databaseRepository.getAllCameraListWithDistrict()
                 if (cameraList.isEmpty()) {
-                    cameraList = cameraRepository.getCameras()
-                    databaseRepository.insertCamera(cameraList)
+                    val camera = cameraRepository.getCameras()
+                    databaseRepository.insertCamera(camera)
                 }
-                cameraList
+                databaseRepository.getAllCameraListWithDistrict()
             }
             _stateLoading.value = LoadingState.Loaded
             _stateCamera.value = CameraListState.Success(cameraList)

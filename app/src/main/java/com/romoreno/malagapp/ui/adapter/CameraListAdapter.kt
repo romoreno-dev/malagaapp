@@ -5,13 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.romoreno.malagapp.R
+import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 
 class CameraListAdapter(private val whenCameraItemSelected: WhenCameraItemSelected,
-                        private var list: List<CameraEntity> = emptyList())  :
+                        private var list: List<CameraWithDistrict> = emptyList())  :
     RecyclerView.Adapter<CameraListViewHolder>() {
 
-    fun updateList(newList: List<CameraEntity>) {
+    fun updateList(newList: List<CameraWithDistrict>) {
         val productDiff = CameraDiffUtil(list, newList)
         val result = DiffUtil.calculateDiff(productDiff)
         list = newList

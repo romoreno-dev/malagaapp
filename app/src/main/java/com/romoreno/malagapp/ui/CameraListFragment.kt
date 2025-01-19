@@ -18,6 +18,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textview.MaterialTextView
 import com.romoreno.malagapp.R
+import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.entities.DistrictEntity
 import com.romoreno.malagapp.databinding.FragmentCameraListBinding
@@ -63,26 +64,26 @@ class CameraListFragment : Fragment() {
         }
     }
 
-    private fun whenCameraItemSelected(cameraEntity: CameraEntity) {
+    private fun whenCameraItemSelected(cameraEntity: CameraWithDistrict) {
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_camera)
         val photoView = dialog.findViewById<ImageView>(R.id.photoView)
         val title = dialog.findViewById<MaterialTextView>(R.id.etTitle)
         var recargarFoto = true
 
-        title.text =  cameraEntity.description + " " + recargarFoto
+        title.text =  cameraEntity.cameraEntity.description + " " + recargarFoto
 
         var isDialogVisible = true // Bandera para controlar la recarga
 
         title.setOnClickListener() {
             recargarFoto = !recargarFoto
-            title.text =  cameraEntity.description + " " + recargarFoto
+            title.text =  cameraEntity.cameraEntity.description + " " + recargarFoto
         }
 
 //                // Función para recargar la foto
         fun reloadPhoto() {
             Glide.with(requireContext())
-                .load(cameraEntity.url)
+                .load(cameraEntity.cameraEntity.url)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)// Obtiene una URL aleatoria
                 .into(photoView)
@@ -135,7 +136,7 @@ class CameraListFragment : Fragment() {
         )
     }
 
-    private fun successState(cameraList: List<CameraEntity>) {
+    private fun successState(cameraList: List<CameraWithDistrict>) {
 //        val sb = StringBuilder()
 //
 //        cameraList.stream().forEach {
