@@ -68,10 +68,17 @@ class CameraListFragment : Fragment() {
         dialog.setContentView(R.layout.dialog_camera)
         val photoView = dialog.findViewById<ImageView>(R.id.photoView)
         val title = dialog.findViewById<MaterialTextView>(R.id.etTitle)
-        title.text =  cameraEntity.description
+        var recargarFoto = true
+
+        title.text =  cameraEntity.description + " " + recargarFoto
 
         var isDialogVisible = true // Bandera para controlar la recarga
-//
+
+        title.setOnClickListener() {
+            recargarFoto = !recargarFoto
+            title.text =  cameraEntity.description + " " + recargarFoto
+        }
+
 //                // Función para recargar la foto
         fun reloadPhoto() {
             Glide.with(requireContext())
@@ -83,7 +90,7 @@ class CameraListFragment : Fragment() {
 //
                 // Iniciar recarga periódica
                 lifecycleScope.launch {
-                    while (isDialogVisible) {
+                    while (isDialogVisible && recargarFoto) {
          reloadPhoto()
                         delay(5000) // Espera 5 segundos antes de la próxima recarga
                     }
