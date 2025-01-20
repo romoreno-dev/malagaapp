@@ -3,12 +3,15 @@ package com.romoreno.malagapp.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
+import com.romoreno.malagapp.data.database.entities.DistrictEntity
 import com.romoreno.malagapp.data.database.repository.DatabaseRepository
 import com.romoreno.malagapp.data.network.repository.CameraRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -51,6 +54,19 @@ class CameraListViewModel @Inject constructor(private val cameraRepository: Came
             _stateCamera.value = CameraListState.Success(cameraList)
         }
     }
+
+    fun searchCameras(districtNumber: Int) {
+        viewModelScope.launch {
+            _stateLoading.value = LoadingState.Loading
+            databaseRepository.getCameraListByDistrictNumber(districtNumber)
+                .collect { p ->
+                    run {
+                        _stateLoading.value = LoadingState.Loaded
+                        _stateCamera.value = CameraListState.Success(p)
+                    }
+                }
+        }
+        }
 
     fun searchDistricts() {
         viewModelScope.launch {

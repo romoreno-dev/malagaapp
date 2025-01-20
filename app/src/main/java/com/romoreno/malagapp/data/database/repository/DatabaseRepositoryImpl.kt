@@ -4,11 +4,12 @@ import com.romoreno.malagapp.data.database.dao.CameraDao
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.entities.DistrictEntity
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class DatabaseRepositoryImpl @Inject constructor(private val cameraDao: CameraDao) : DatabaseRepository {
 
-    override suspend fun getCameraListByDistrictNumber(districtNumber: Int): List<CameraEntity> {
+    override fun getCameraListByDistrictNumber(districtNumber: Int): Flow<List<CameraWithDistrict>> {
         return cameraDao.getCameraListByDistrictNumber(districtNumber)
     }
 

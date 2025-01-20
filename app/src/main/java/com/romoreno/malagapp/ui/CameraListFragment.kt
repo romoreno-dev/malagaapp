@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,21 +21,31 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textview.MaterialTextView
 import com.romoreno.malagapp.R
+import com.romoreno.malagapp.data.database.dao.CameraDao
+import com.romoreno.malagapp.data.database.dao.CameraDao_Impl
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.entities.DistrictEntity
+import com.romoreno.malagapp.data.database.repository.DatabaseRepository
+import com.romoreno.malagapp.data.database.repository.DatabaseRepositoryImpl
 import com.romoreno.malagapp.databinding.FragmentCameraListBinding
 import com.romoreno.malagapp.ui.adapter.CameraListAdapter
 import com.romoreno.malagapp.ui.adapter.WhenCameraItemSelected
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class CameraListFragment : Fragment() {
 
     private val cameraListViewModel: CameraListViewModel by viewModels()
+
+    @Inject
+    lateinit var databaseRepository: DatabaseRepository
 
     private lateinit var cameraAdapter: CameraListAdapter
 
@@ -130,10 +143,51 @@ class CameraListFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        val items = arrayOf("1", "2", "3")
-        (binding.comboBox.editText as? MaterialAutoCompleteTextView)?.setSimpleItems(
-            items
-        )
+
+        lifecycleScope.launch {
+            val mapita = withContext(Dispatchers.IO) { databaseRepository.getDistrictList().associate { it.name  to it.id } }
+
+                val lista = listOf("Todos") + mapita
+                .keys
+                .toList()
+
+            val adapter = ArrayAdapter<String>(
+                requireContext(), // Contexto de la actividad
+                android.R.layout.simple_spinner_item, // Layout para los items del Spinner
+                lista // Lista de datos a mostrar
+            )
+            // Establecer el adaptador en el Spinner
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.comboBox.adapter = adapter
+
+            // Agregar un listener al Spinner
+            binding.comboBox.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    // El nombre seleccionado
+                    val nombreSeleccionado = lista[position]
+                    val idSeleccionado = mapita.get(nombreSeleccionado)
+                    if (idSeleccionado != null) {
+                        cameraListViewModel.searchCameras(idSeleccionado)
+                    } else {
+                        cameraListViewModel.searchCameras()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+            }
+
+        }
+
+
+
+
+
+
+//        val items = arrayOf("1", "2", "3")
+//        (binding.comboBox.editText as? MaterialAutoCompleteTextView)?.setSimpleItems(
+//            items
+//        )
     }
 
     private fun successState(cameraList: List<CameraWithDistrict>) {
@@ -145,6 +199,9 @@ class CameraListFragment : Fragment() {
 //            cameraUrl = it.url
 //        }
         cameraAdapter.updateList(cameraList)
+        binding.rvCamera.apply {
+            scrollToPosition(0)
+        }
     }
 
     private fun successDistrictState(district: List<DistrictEntity>) {

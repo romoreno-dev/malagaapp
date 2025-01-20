@@ -8,12 +8,13 @@ import androidx.room.Transaction
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.entities.DistrictEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CameraDao {
 
     @Query("SELECT * FROM camera WHERE district_id = :districtNumber")
-    suspend fun getCameraListByDistrictNumber(districtNumber: Int): List<CameraEntity>
+    fun getCameraListByDistrictNumber(districtNumber: Int): Flow<List<CameraWithDistrict>>
 
     @Query("SELECT * FROM camera ORDER BY district_id")
     suspend fun getAllCameraList(): List<CameraEntity>
