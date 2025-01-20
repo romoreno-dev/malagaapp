@@ -1,6 +1,7 @@
 package com.romoreno.malagapp.ui
 
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -77,46 +78,58 @@ class CameraListFragment : Fragment() {
         }
     }
 
+    private fun sendImage(cameraEntity: CameraEntity) {
+        val intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "${cameraEntity.description} \n ${cameraEntity.url} \n\n ${cameraEntity.address} \n ")
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(intent, getString(R.string.share))
+        startActivity(shareIntent)
+    }
+
     private fun whenCameraItemSelected(cameraEntity: CameraWithDistrict) {
+        var dialogVisible = true
+        var recargarFoto = false
         val dialog = Dialog(requireContext())
         dialog.setContentView(R.layout.dialog_camera)
         val photoView = dialog.findViewById<ImageView>(R.id.photoView)
         val title = dialog.findViewById<MaterialTextView>(R.id.etTitle)
-        var recargarFoto = true
 
-        title.text =  cameraEntity.cameraEntity.description + " " + recargarFoto
-
-        var isDialogVisible = true // Bandera para controlar la recarga
+        title.text =  cameraEntity.cameraEntity.description + " \n" + recargarFoto
 
         title.setOnClickListener() {
             recargarFoto = !recargarFoto
-            title.text =  cameraEntity.cameraEntity.description + " " + recargarFoto
+            title.text =  cameraEntity.cameraEntity.description + " \n" + recargarFoto
+
+            lifecycleScope.launch {
+                while (dialogVisible && recargarFoto) {
+                    loadPhoto(cameraEntity.cameraEntity.url, photoView)
+                    delay(5000)
+                }
+            }
         }
 
-//                // Función para recargar la foto
-        fun reloadPhoto() {
-            Glide.with(requireContext())
-                .load(cameraEntity.cameraEntity.url)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)// Obtiene una URL aleatoria
-                .into(photoView)
+        photoView.setOnLongClickListener {
+            sendImage(cameraEntity.cameraEntity)
+            return@setOnLongClickListener true
         }
-//
-                // Iniciar recarga periódica
-                lifecycleScope.launch {
-                    while (isDialogVisible && recargarFoto) {
-         reloadPhoto()
-                        delay(5000) // Espera 5 segundos antes de la próxima recarga
-                    }
-                }
 
-                // Mostrar el diálogo
-                dialog.setOnDismissListener {
-                    isDialogVisible = false // Detener la recarga cuando el diálogo se cierra
-                }
+        dialog.setOnDismissListener {
+            dialogVisible = false
+            recargarFoto = false
+        }
 
-        reloadPhoto() // Cargar la imagen inicial
+        loadPhoto(cameraEntity.cameraEntity.url, photoView)
         dialog.show()
+    }
+
+    private fun loadPhoto(url: String, photoView: ImageView) {
+        Glide.with(requireContext())
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(photoView)
     }
 
     private fun initUIState() {

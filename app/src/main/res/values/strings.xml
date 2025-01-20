@@ -3,6 +3,7 @@
     <string name="camera_list_menu">Lista</string>
     <string name="camera_map_menu">Mapa</string>
     <string name="camera_guess_menu">Adivina</string>
+    <string name="share">Compartir</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
