@@ -2,24 +2,25 @@ package com.romoreno.malagapp.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
-import com.romoreno.malagapp.data.database.entities.DistrictEntity
+import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.repository.DatabaseRepository
 import com.romoreno.malagapp.data.network.repository.CameraRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class CameraListViewModel @Inject constructor(private val cameraRepository: CameraRepository,
-    private val databaseRepository: DatabaseRepository) :
+class CameraListViewModel @Inject constructor(
+    private val cameraRepository: CameraRepository,
+    private val databaseRepository: DatabaseRepository
+) :
     ViewModel() {
+
+        var idSeleccionado: Int? = null
 
     private var _stateCamera = MutableStateFlow<CameraListState>(
         CameraListState
@@ -55,10 +56,10 @@ class CameraListViewModel @Inject constructor(private val cameraRepository: Came
         }
     }
 
-    fun searchCameras(districtNumber: Int) {
+    fun searchCameras(districtNumber: Int?, keyword: String?) {
         viewModelScope.launch {
             _stateLoading.value = LoadingState.Loading
-            databaseRepository.getCameraListByDistrictNumber(districtNumber)
+            databaseRepository.getCameraListByDistrictNumberAndKeyword(districtNumber, keyword)
                 .collect { p ->
                     run {
                         _stateLoading.value = LoadingState.Loaded
@@ -66,7 +67,7 @@ class CameraListViewModel @Inject constructor(private val cameraRepository: Came
                     }
                 }
         }
-        }
+    }
 
     fun searchDistricts() {
         viewModelScope.launch {
@@ -76,6 +77,14 @@ class CameraListViewModel @Inject constructor(private val cameraRepository: Came
             }
             _stateLoading.value = LoadingState.Loaded
             _stateDistrict.value = DistrictListState.Success(districtList)
+        }
+    }
+
+    fun markCameraAsFavourite(cameraEntity: CameraEntity) {
+        viewModelScope.launch {
+            _stateLoading.value = LoadingState.Loading
+            databaseRepository.markCameraAsFavourite(cameraEntity)
+            _stateLoading.value = LoadingState.Loaded
         }
     }
 

@@ -9,12 +9,16 @@ import javax.inject.Inject
 
 class DatabaseRepositoryImpl @Inject constructor(private val cameraDao: CameraDao) : DatabaseRepository {
 
-    override fun getCameraListByDistrictNumber(districtNumber: Int): Flow<List<CameraWithDistrict>> {
-        return cameraDao.getCameraListByDistrictNumber(districtNumber)
-    }
-
-    override suspend fun getAllCameraList(): List<CameraEntity> {
-        return cameraDao.getAllCameraList()
+    override fun getCameraListByDistrictNumberAndKeyword(districtNumber: Int?, keyword: String?): Flow<List<CameraWithDistrict>> {
+        if (districtNumber != null && !keyword.isNullOrBlank()) {
+            return cameraDao.getCameraListByDistrictNumberAndKeyword(districtNumber, "%${keyword}%")
+        } else if (!keyword.isNullOrBlank()) {
+            return cameraDao.getCameraListByKeyword("%${keyword}%")
+        } else if (districtNumber != null) {
+            return cameraDao.getCameraListByDistrictNumber(districtNumber)
+        } else {
+            return cameraDao.getAllCameraList()
+        }
     }
 
     override suspend fun getAllCameraListWithDistrict(): List<CameraWithDistrict> {
@@ -34,4 +38,10 @@ class DatabaseRepositoryImpl @Inject constructor(private val cameraDao: CameraDa
             cameraDao.insertCamera(entity)
         }
     }
+
+    override suspend fun markCameraAsFavourite(camera: CameraEntity) {
+        val favourite = camera.favourite
+        val camera = camera.copy(favourite = !favourite)
+        cameraDao.updateCamera(camera)
+        }
 }

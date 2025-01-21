@@ -13,27 +13,44 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="12dp">
+        android:layout_margin="10dp">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvDistrict">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvCameraTitle"
+                android:layout_width="310dp"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                tools:text="Camara de Trafico mucho texto mucho texto mucho \n mucho texto mucho texto mucho texto mucho texto" />
+
+            <ImageView
+                android:id="@+id/ivStar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                app:layout_constraintTop_toBottomOf="@id/tvDistrict"
-                app:layout_constraintBottom_toTopOf="@id/tvDistrict"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:text="Camara de Trafico" />
+                android:padding="8dp"
+                tools:src="@drawable/ic_star"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tvDistrict"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="19sp"
             android:textAllCaps="true"
-            app:layout_constraintTop_toBottomOf="@+id/tvCameraTitle"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="19sp"
+            android:layout_marginTop="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
             tools:text="Distrito" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

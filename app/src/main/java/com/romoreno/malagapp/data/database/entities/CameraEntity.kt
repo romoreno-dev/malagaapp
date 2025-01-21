@@ -25,5 +25,6 @@ data class CameraEntity (
     @ColumnInfo(name = "address") val address: String,
     @ColumnInfo(name = "url") val url: String,
     @ColumnInfo(name = "latitude") val latitude: String,
-    @ColumnInfo(name = "longitude") val longitude: String
+    @ColumnInfo(name = "longitude") val longitude: String,
+    @ColumnInfo(name = "favourite") val favourite: Boolean
 )

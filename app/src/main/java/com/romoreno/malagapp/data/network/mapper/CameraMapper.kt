@@ -14,7 +14,8 @@ object CameraMapper {
             properties?.direccion ?: "",
             properties?.urlImagen ?: "",
             geometry?.coordinates?.get(0).toString(),
-            geometry?.coordinates?.get(1).toString()
+            geometry?.coordinates?.get(1).toString(),
+            false
         )
     }
 

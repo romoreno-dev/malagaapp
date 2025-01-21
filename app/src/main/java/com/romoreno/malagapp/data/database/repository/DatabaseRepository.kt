@@ -7,11 +7,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface DatabaseRepository {
 
-    fun getCameraListByDistrictNumber(districtNumber: Int): Flow<List<CameraWithDistrict>>
-    suspend fun getAllCameraList(): List<CameraEntity>
+    fun getCameraListByDistrictNumberAndKeyword(districtNumber: Int?, keyword: String?): Flow<List<CameraWithDistrict>>
     suspend fun getAllCameraListWithDistrict(): List<CameraWithDistrict>
     suspend fun getDistrictList(): List<DistrictEntity>
     suspend fun insertCamera(entity: CameraEntity)
     suspend fun insertCamera(entity: List<CameraEntity>?)
-
+    suspend fun markCameraAsFavourite(camera: CameraEntity)
 }
