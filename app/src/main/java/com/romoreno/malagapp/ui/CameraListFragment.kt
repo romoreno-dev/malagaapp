@@ -153,20 +153,26 @@ class CameraListFragment : Fragment() {
     private fun initUIState() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                cameraListViewModel.stateCamera.collect {
-                    when (it) {
-                        is CameraListState.Success -> successState(it.cameras)
+                launch {
+                    cameraListViewModel.stateCamera.collect {
+                        when (it) {
+                            is CameraListState.Success -> successState(it.cameras)
+                        }
                     }
                 }
-                cameraListViewModel.stateDistrict.collect {
-                    when (it) {
-                        is DistrictListState.Success -> successDistrictState(it.district)
+                launch {
+                    cameraListViewModel.stateDistrict.collect {
+                        when (it) {
+                            is DistrictListState.Success -> successDistrictState(it.district)
+                        }
                     }
                 }
-                cameraListViewModel.stateLoading.collect {
-                    when (it) {
-                        LoadingState.Loading -> binding.progressBar.isVisible = true
-                        LoadingState.Loaded -> binding.progressBar.isVisible = false
+                launch {
+                    cameraListViewModel.stateLoading.collect {
+                        when (it) {
+                            LoadingState.Loading -> binding.progressBar.isVisible = true
+                            LoadingState.Loaded -> binding.progressBar.isVisible = false
+                        }
                     }
                 }
             }
@@ -224,17 +230,7 @@ class CameraListFragment : Fragment() {
     }
 
     private fun successState(cameraList: List<CameraWithDistrict>) {
-//        val sb = StringBuilder()
-//
-//        cameraList.stream().forEach {
-//            sb.append("${it.id} ${it.name} ${it.description} ${it.address} ${it.latitude} ${it.longitude} ${it.url}\n\n")
-//            binding.tvCamera.text = sb
-//            cameraUrl = it.url
-//        }
         cameraAdapter.updateList(cameraList)
-        binding.rvCamera.apply {
-            scrollToPosition(0)
-        }
     }
 
     private fun successDistrictState(district: List<DistrictEntity>) {

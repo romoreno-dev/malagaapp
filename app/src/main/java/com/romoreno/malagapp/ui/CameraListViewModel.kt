@@ -7,6 +7,7 @@ import com.romoreno.malagapp.data.database.repository.DatabaseRepository
 import com.romoreno.malagapp.data.network.repository.CameraRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,7 +21,9 @@ class CameraListViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-        var idSeleccionado: Int? = null
+    var idSeleccionado: Int? = null
+
+    private var searchJob: Job? = null
 
     private var _stateCamera = MutableStateFlow<CameraListState>(
         CameraListState
@@ -57,14 +60,13 @@ class CameraListViewModel @Inject constructor(
     }
 
     fun searchCameras(districtNumber: Int?, keyword: String?) {
-        viewModelScope.launch {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
             _stateLoading.value = LoadingState.Loading
             databaseRepository.getCameraListByDistrictNumberAndKeyword(districtNumber, keyword)
                 .collect { p ->
-                    run {
-                        _stateLoading.value = LoadingState.Loaded
-                        _stateCamera.value = CameraListState.Success(p)
-                    }
+                    _stateLoading.value = LoadingState.Loaded
+                    _stateCamera.value = CameraListState.Success(p)
                 }
         }
     }
