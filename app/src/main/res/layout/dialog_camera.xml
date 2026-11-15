@@ -47,6 +47,23 @@
             app:icon="@drawable/ic_refresh" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFavourite"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/favourite"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:minWidth="48dp"
+            android:paddingHorizontal="12dp"
+            android:visibility="gone"
+            app:icon="@drawable/ic_star"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:iconTint="@null" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnShare"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"

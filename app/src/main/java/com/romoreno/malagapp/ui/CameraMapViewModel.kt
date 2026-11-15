@@ -3,6 +3,7 @@ package com.romoreno.malagapp.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
+import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.entities.DistrictEntity
 import com.romoreno.malagapp.data.database.repository.DatabaseRepository
 import com.romoreno.malagapp.data.network.repository.CameraRepository
@@ -25,6 +26,13 @@ class CameraMapViewModel @Inject constructor(
 
     private val _districts = MutableStateFlow<List<DistrictEntity>>(emptyList())
     val districts: StateFlow<List<DistrictEntity>> = _districts
+
+    fun toggleFavourite(camera: CameraEntity) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { databaseRepository.markCameraAsFavourite(camera) }
+            loadCameras()
+        }
+    }
 
     fun loadCameras() {
         viewModelScope.launch {

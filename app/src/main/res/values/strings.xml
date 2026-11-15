@@ -22,6 +22,9 @@
     <string name="map_select_district">Selecciona un distrito…</string>
     <string name="map_all_districts">Todos los distritos</string>
     <string name="guess_live">En directo · la foto se actualiza cada 5 s</string>
+    <string name="filter_favourites">Favoritos</string>
+    <string name="filter_all">Todos</string>
+    <string name="favourite">Favorito</string>
     <string name="alias_edit">Poner alias</string>
     <string name="alias_hint">Alias (vacío para quitarlo)</string>
     <string name="alias_save">Guardar</string>

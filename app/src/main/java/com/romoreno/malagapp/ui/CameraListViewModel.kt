@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -58,12 +59,13 @@ class CameraListViewModel @Inject constructor(
         }
     }
 
-    fun searchCameras(districtNumber: Int?, keyword: String?) {
+    fun searchCameras(districtNumber: Int?, keyword: String?, onlyFavourites: Boolean = false) {
         // Cancelamos la busqueda anterior: si no, cada cambio de filtro dejaba un colector vivo
         // que pisaba la lista (y rompia el refresco al marcar favoritos)
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             databaseRepository.getCameraListByDistrictNumberAndKeyword(districtNumber, keyword)
+                .map { list -> if (onlyFavourites) list.filter { it.cameraEntity.favourite } else list }
                 .collect { p ->
                     _stateLoading.value = LoadingState.Loaded
                     _stateCamera.value = CameraListState.Success(p)

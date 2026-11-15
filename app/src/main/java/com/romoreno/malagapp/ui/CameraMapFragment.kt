@@ -26,14 +26,14 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.Marker
 
 /**
- * Mapa con OpenStreetMap (osmdroid, sin API key). No carga ninguna camara hasta que se elige
- * un distrito (o "Todos") en el selector superior.
+ * Mapa con OpenStreetMap (osmdroid, sin API key). Empieza mostrando solo las favoritas; el
+ * selector superior permite elegir un distrito o "Todos".
  */
 @AndroidEntryPoint
 class CameraMapFragment : Fragment() {
 
     private sealed interface Selection {
-        data object None : Selection
+        data object Favourites : Selection
         data object All : Selection
         data class Single(val districtId: Int) : Selection
     }
@@ -43,7 +43,8 @@ class CameraMapFragment : Fragment() {
     private var _binding: FragmentCameraMapBinding? = null
     private val binding get() = _binding!!
 
-    private var selection: Selection = Selection.None
+    private var selection: Selection = Selection.Favourites
+    private var initialZoomDone = false
     private var selectedPosition = 0
     private var spinnerDistricts: List<DistrictEntity> = emptyList()
 
@@ -60,6 +61,7 @@ class CameraMapFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.mapView.apply {
             setTileSource(TileSourceFactory.MAPNIK)
+            MapConfig.applyDarkTiles(this)
             setMultiTouchControls(true)
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
             controller.setZoom(12.0)
@@ -69,7 +71,14 @@ class CameraMapFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { viewModel.districts.collect { setupSpinner(it) } }
-                launch { viewModel.cameras.collect { drawMarkers(zoomToResults = false) } }
+                launch {
+                    viewModel.cameras.collect {
+                        // La primera vez que llegan datos, encuadramos los favoritos
+                        val zoom = !initialZoomDone && visibleCameras().isNotEmpty()
+                        if (zoom) initialZoomDone = true
+                        drawMarkers(zoomToResults = zoom)
+                    }
+                }
             }
         }
     }
@@ -77,7 +86,7 @@ class CameraMapFragment : Fragment() {
     private fun setupSpinner(districts: List<DistrictEntity>) {
         if (districts.isEmpty() || districts == spinnerDistricts) return
         spinnerDistricts = districts
-        val names = listOf(getString(R.string.map_select_district)) +
+        val names = listOf(getString(R.string.filter_favourites)) +
                 districts.map { it.name } +
                 getString(R.string.map_all_districts)
         binding.spDistrict.adapter = ArrayAdapter(
@@ -86,10 +95,10 @@ class CameraMapFragment : Fragment() {
         binding.spDistrict.setSelection(selectedPosition, false)
         binding.spDistrict.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, position: Int, id: Long) {
-                if (position == selectedPosition && selection != Selection.None) return
+                if (position == selectedPosition) return
                 selectedPosition = position
                 selection = when (position) {
-                    0 -> Selection.None
+                    0 -> Selection.Favourites
                     names.lastIndex -> Selection.All
                     else -> Selection.Single(spinnerDistricts[position - 1].id)
                 }
@@ -103,7 +112,7 @@ class CameraMapFragment : Fragment() {
     private fun visibleCameras(): List<CameraWithDistrict> {
         val all = viewModel.cameras.value
         return when (val s = selection) {
-            Selection.None -> emptyList()
+            Selection.Favourites -> all.filter { it.cameraEntity.favourite }
             Selection.All -> all
             is Selection.Single -> all.filter { it.cameraEntity.productId == s.districtId }
         }
@@ -132,7 +141,9 @@ class CameraMapFragment : Fragment() {
                     setTint(if (camera.favourite) FAVOURITE_COLOR else PIN_COLOR)
                 }
                 setOnMarkerClickListener { _, _ ->
-                    CameraDialog.show(requireContext(), viewLifecycleOwner, camera)
+                    CameraDialog.show(requireContext(), viewLifecycleOwner, camera) {
+                        viewModel.toggleFavourite(it)
+                    }
                     true
                 }
             }

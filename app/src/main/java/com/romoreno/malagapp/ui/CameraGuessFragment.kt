@@ -73,6 +73,7 @@ class CameraGuessFragment : Fragment() {
     private fun setupMap() {
         binding.guessMap.apply {
             setTileSource(TileSourceFactory.MAPNIK)
+            MapConfig.applyDarkTiles(this)
             setMultiTouchControls(true)
             zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
             // El mapa esta dentro de un ScrollView: que el gesto sobre el mapa no lo desplace

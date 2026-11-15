@@ -45,6 +45,7 @@ class CameraListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var idSeleccionado: Int? = null
+    private var onlyFavourites = true // el selector empieza en "Favoritos"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,12 +75,12 @@ class CameraListFragment : Fragment() {
     private fun initListeners() {
         binding.svCameras.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                cameraListViewModel.searchCameras(idSeleccionado, query)
+                cameraListViewModel.searchCameras(idSeleccionado, query, onlyFavourites)
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                cameraListViewModel.searchCameras(idSeleccionado, newText)
+                cameraListViewModel.searchCameras(idSeleccionado, newText, onlyFavourites)
                 return false
             }
         })
@@ -144,7 +145,11 @@ class CameraListFragment : Fragment() {
                 databaseRepository.getDistrictList().sortedBy { it.id }.associate { it.name to it.id }
             }
 
-            val names = listOf("Todos") + districts.keys.toList()
+            // Posicion 0 = Favoritos (por defecto), 1 = Todos, el resto = distritos
+            val names = listOf(
+                getString(R.string.filter_favourites),
+                getString(R.string.filter_all)
+            ) + districts.keys.toList()
 
             val adapter = ArrayAdapter(
                 requireContext(),
@@ -161,10 +166,12 @@ class CameraListFragment : Fragment() {
                     position: Int,
                     id: Long
                 ) {
-                    idSeleccionado = districts[names[position]]
+                    onlyFavourites = position == 0
+                    idSeleccionado = if (position >= 2) districts[names[position]] else null
                     cameraListViewModel.searchCameras(
                         idSeleccionado,
-                        binding.svCameras.query.toString()
+                        binding.svCameras.query.toString(),
+                        onlyFavourites
                     )
                     // Solo al cambiar de filtro; al marcar favorito la lista no debe saltar arriba
                     binding.rvCamera.scrollToPosition(0)

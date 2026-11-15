@@ -46,7 +46,16 @@ object CameraDialog {
 
     private const val REFRESH_MILLIS = 5000L
 
-    fun show(context: Context, owner: LifecycleOwner, camera: CameraEntity) {
+    /**
+     * @param onFavouriteToggled si no es null se muestra la estrella de favorito; se invoca con
+     * la camara tal y como estaba antes de pulsar (la misma que espera markCameraAsFavourite).
+     */
+    fun show(
+        context: Context,
+        owner: LifecycleOwner,
+        camera: CameraEntity,
+        onFavouriteToggled: ((CameraEntity) -> Unit)? = null
+    ) {
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_camera)
         // Ancho adaptado a la pantalla (92%), sea cual sea el movil
@@ -92,6 +101,22 @@ object CameraDialog {
                         delay(REFRESH_MILLIS)
                     }
                 }
+            }
+        }
+
+        if (onFavouriteToggled != null) {
+            val star = dialog.findViewById<MaterialButton>(R.id.btnFavourite)
+            var current = camera
+            fun renderStar() = star.setIconResource(
+                if (current.favourite) R.drawable.ic_filled_star else R.drawable.ic_star
+            )
+            star.visibility = android.view.View.VISIBLE
+            renderStar()
+            star.setOnClickListener {
+                val before = current
+                current = before.copy(favourite = !before.favourite)
+                renderStar()
+                onFavouriteToggled(before)
             }
         }
 
