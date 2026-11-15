@@ -5,10 +5,25 @@
     android:layout_height="match_parent"
     tools:context=".ui.CameraMapFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Mapa" />
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="6dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spDistrict"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:paddingHorizontal="8dp" />
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

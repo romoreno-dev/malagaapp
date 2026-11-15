@@ -13,4 +13,5 @@ interface DatabaseRepository {
     suspend fun insertCamera(entity: CameraEntity)
     suspend fun insertCamera(entity: List<CameraEntity>?)
     suspend fun markCameraAsFavourite(camera: CameraEntity)
+    suspend fun updateAlias(cameraId: Int, alias: String?)
 }

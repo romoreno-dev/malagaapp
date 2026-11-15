@@ -17,20 +17,28 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvDistrict">
+            app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvCameraTitle"
-                android:layout_width="310dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:textSize="15sp"
                 tools:text="Camara de Trafico mucho texto mucho texto mucho \n mucho texto mucho texto mucho texto mucho texto" />
+
+            <ImageView
+                android:id="@+id/ivEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/alias_edit"
+                android:padding="8dp"
+                android:src="@drawable/ic_edit" />
 
             <ImageView
                 android:id="@+id/ivStar"

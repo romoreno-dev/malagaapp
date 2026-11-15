@@ -1,15 +1,16 @@
 package com.romoreno.malagapp.ui
 
-import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ImageView
+import android.widget.FrameLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
+import com.google.android.material.textfield.TextInputEditText
+import com.romoreno.malagapp.R
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,20 +18,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.textview.MaterialTextView
-import com.romoreno.malagapp.R
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
-import com.romoreno.malagapp.data.database.entities.DistrictEntity
 import com.romoreno.malagapp.data.database.repository.DatabaseRepository
 import com.romoreno.malagapp.databinding.FragmentCameraListBinding
 import com.romoreno.malagapp.ui.adapter.CameraListAdapter
 import com.romoreno.malagapp.ui.adapter.WhenCameraItemSelected
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -54,8 +49,7 @@ class CameraListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI()
-        cameraListViewModel.searchDistricts()
-       // cameraListViewModel.searchCameras()
+        cameraListViewModel.searchCameras()
     }
 
     private fun initUI() {
@@ -66,8 +60,10 @@ class CameraListFragment : Fragment() {
     }
 
     private fun initList() {
-        cameraAdapter = CameraListAdapter(WhenCameraItemSelected(onCardViewSelected = {
-            whenCameraItemSelected(it)}, onStartSelected = {onStarSelected(it)}
+        cameraAdapter = CameraListAdapter(WhenCameraItemSelected(
+            onCardViewSelected = { whenCameraItemSelected(it) },
+            onStartSelected = { onStarSelected(it) },
+            onEditAliasSelected = { showAliasDialog(it) }
         ))
         binding.rvCamera.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -89,84 +85,53 @@ class CameraListFragment : Fragment() {
         })
     }
 
-    private fun sendImage(cameraEntity: CameraEntity) {
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(
-                Intent.EXTRA_TEXT,
-                "${cameraEntity.description} \n ${cameraEntity.url} \n\n ${cameraEntity.address} \n "
-            )
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(intent, getString(R.string.share))
-        startActivity(shareIntent)
-    }
-
     private fun onStarSelected(cameraEntity: CameraEntity) {
         cameraListViewModel.markCameraAsFavourite(cameraEntity)
     }
 
-    private fun whenCameraItemSelected(cameraEntity: CameraWithDistrict) {
-        var dialogVisible = true
-        var recargarFoto = false
-        val dialog = Dialog(requireContext())
-        dialog.setContentView(R.layout.dialog_camera)
-        val photoView = dialog.findViewById<ImageView>(R.id.photoView)
-        val title = dialog.findViewById<MaterialTextView>(R.id.etTitle)
-
-        title.text = cameraEntity.cameraEntity.description + " \n" + recargarFoto
-
-        title.setOnClickListener() {
-            recargarFoto = !recargarFoto
-            title.text = cameraEntity.cameraEntity.description + " \n" + recargarFoto
-
-            lifecycleScope.launch {
-                while (dialogVisible && recargarFoto) {
-                    loadPhoto(cameraEntity.cameraEntity.url, photoView)
-                    delay(5000)
-                }
+    private fun showAliasDialog(camera: CameraEntity) {
+        val input = TextInputEditText(requireContext()).apply {
+            setText(camera.alias ?: "")
+            setHint(R.string.alias_hint)
+            setSingleLine()
+            setSelection(text?.length ?: 0)
+        }
+        val container = FrameLayout(requireContext()).apply {
+            val pad = (20 * resources.displayMetrics.density).toInt()
+            setPadding(pad, pad / 2, pad, 0)
+            addView(input)
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle(camera.description)
+            .setView(container)
+            .setPositiveButton(R.string.alias_save) { _, _ ->
+                cameraListViewModel.updateAlias(camera.id, input.text?.toString())
             }
-        }
-
-        photoView.setOnLongClickListener {
-            sendImage(cameraEntity.cameraEntity)
-            return@setOnLongClickListener true
-        }
-
-        dialog.setOnDismissListener {
-            dialogVisible = false
-            recargarFoto = false
-        }
-
-        loadPhoto(cameraEntity.cameraEntity.url, photoView)
-        dialog.show()
+            .setNegativeButton(R.string.alias_cancel, null)
+            .show()
     }
 
-    private fun loadPhoto(url: String, photoView: ImageView) {
-        Glide.with(requireContext())
-            .load(url)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
-            .skipMemoryCache(true)
-            .into(photoView)
+    private fun whenCameraItemSelected(camera: CameraWithDistrict) {
+        CameraDialog.show(requireContext(), viewLifecycleOwner, camera.cameraEntity)
     }
 
     private fun initUIState() {
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                cameraListViewModel.stateCamera.collect {
-                    when (it) {
-                        is CameraListState.Success -> successState(it.cameras)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // collect no termina nunca: cada flujo necesita su propia corrutina
+                launch {
+                    cameraListViewModel.stateCamera.collect {
+                        when (it) {
+                            is CameraListState.Success -> successState(it.cameras)
+                        }
                     }
                 }
-                cameraListViewModel.stateDistrict.collect {
-                    when (it) {
-                        is DistrictListState.Success -> successDistrictState(it.district)
-                    }
-                }
-                cameraListViewModel.stateLoading.collect {
-                    when (it) {
-                        LoadingState.Loading -> binding.progressBar.isVisible = true
-                        LoadingState.Loaded -> binding.progressBar.isVisible = false
+                launch {
+                    cameraListViewModel.stateLoading.collect {
+                        when (it) {
+                            LoadingState.Loading -> binding.progressBar.isVisible = true
+                            LoadingState.Loaded -> binding.progressBar.isVisible = false
+                        }
                     }
                 }
             }
@@ -174,26 +139,21 @@ class CameraListFragment : Fragment() {
     }
 
     private fun initAdapter() {
-
-        lifecycleScope.launch {
-            val mapita = withContext(Dispatchers.IO) {
-                databaseRepository.getDistrictList().associate { it.name to it.id }
+        viewLifecycleOwner.lifecycleScope.launch {
+            val districts = withContext(Dispatchers.IO) {
+                databaseRepository.getDistrictList().sortedBy { it.id }.associate { it.name to it.id }
             }
 
-            val lista = listOf("Todos") + mapita
-                .keys
-                .toList()
+            val names = listOf("Todos") + districts.keys.toList()
 
-            val adapter = ArrayAdapter<String>(
-                requireContext(), // Contexto de la actividad
-                android.R.layout.simple_spinner_item, // Layout para los items del Spinner
-                lista // Lista de datos a mostrar
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                names
             )
-            // Establecer el adaptador en el Spinner
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.comboBox.adapter = adapter
 
-            // Agregar un listener al Spinner
             binding.comboBox.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
@@ -201,55 +161,38 @@ class CameraListFragment : Fragment() {
                     position: Int,
                     id: Long
                 ) {
-                    // El nombre seleccionado
-                    val nombreSeleccionado = lista[position]
-                    idSeleccionado = mapita[nombreSeleccionado]
+                    idSeleccionado = districts[names[position]]
                     cameraListViewModel.searchCameras(
                         idSeleccionado,
                         binding.svCameras.query.toString()
                     )
+                    // Solo al cambiar de filtro; al marcar favorito la lista no debe saltar arriba
+                    binding.rvCamera.scrollToPosition(0)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
-
         }
-
-
-//        val items = arrayOf("1", "2", "3")
-//        (binding.comboBox.editText as? MaterialAutoCompleteTextView)?.setSimpleItems(
-//            items
-//        )
     }
 
     private fun successState(cameraList: List<CameraWithDistrict>) {
-//        val sb = StringBuilder()
-//
-//        cameraList.stream().forEach {
-//            sb.append("${it.id} ${it.name} ${it.description} ${it.address} ${it.latitude} ${it.longitude} ${it.url}\n\n")
-//            binding.tvCamera.text = sb
-//            cameraUrl = it.url
-//        }
+        val oldFirst = cameraAdapter.firstId()
         cameraAdapter.updateList(cameraList)
-        binding.rvCamera.apply {
-            scrollToPosition(0)
-        }
-    }
-
-    private fun successDistrictState(district: List<DistrictEntity>) {
-        // districtList = district
+        // Los favoritos van primero (ORDER BY favourite DESC): si cambia la cabecera de la lista
+        // (se marca/desmarca una), subimos para que se vea donde ha quedado
+        if (oldFirst != cameraAdapter.firstId()) binding.rvCamera.scrollToPosition(0)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentCameraListBinding.inflate(layoutInflater, container, false)
+    ): View {
+        _binding = FragmentCameraListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 

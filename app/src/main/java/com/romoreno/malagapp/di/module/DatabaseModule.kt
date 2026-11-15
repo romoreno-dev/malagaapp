@@ -14,9 +14,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Singleton
 
 @Module
@@ -29,14 +26,13 @@ object DatabaseModule {
     @Provides
     fun providesMalagappDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, ApplicationDatabase::class.java, MALAGA_APP_DATABASE)
+            .addMigrations(ApplicationDatabase.MIGRATION_1_2)
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
-                    // En la primera ejecucion lanzamos una corrutina para llenar la BBDD
-                    // con los supermercados disponibles en la aplicacion
-                    CoroutineScope(Dispatchers.IO).launch {
-                        populateDatabase(db)
-                    }
+                    // Se rellenan los distritos de forma sincrona dentro de la creacion de la BBDD:
+                    // las camaras tienen una FK a distrito y no pueden insertarse antes
+                    populateDatabase(db)
                 }
             }).build()
 

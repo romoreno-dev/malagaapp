@@ -6,6 +6,30 @@
     <string name="share">Compartir</string>
     <string name="camera_search">Buscar cámara</string>
     <string name="district">Distrito</string>
+    <string name="refresh_start">Actualizar</string>
+    <string name="refresh_stop">Detener</string>
+    <string name="guess_question">¿En qué distrito está esta cámara?</string>
+    <string name="guess_score">Aciertos: %1$d / %2$d</string>
+    <string name="guess_correct">¡Correcto!</string>
+    <string name="guess_wrong">Era: %1$s</string>
+    <string name="guess_next">Siguiente</string>
+    <string name="guess_empty">No hay cámaras disponibles todavía. Abre la lista con conexión a internet.</string>
+    <string name="share_photo">Compartir foto</string>
+    <string name="save_photo">Guardar foto en la galería</string>
+    <string name="photo_saved">Foto guardada en la galería</string>
+    <string name="photo_save_error">No se pudo guardar la foto</string>
+    <string name="photo_not_ready">La foto aún no se ha cargado</string>
+    <string name="map_select_district">Selecciona un distrito…</string>
+    <string name="map_all_districts">Todos los distritos</string>
+    <string name="guess_live">En directo · la foto se actualiza cada 5 s</string>
+    <string name="alias_edit">Poner alias</string>
+    <string name="alias_hint">Alias (vacío para quitarlo)</string>
+    <string name="alias_save">Guardar</string>
+    <string name="alias_cancel">Cancelar</string>
+    <string name="guess_mode_district">Por distrito</string>
+    <string name="guess_mode_street">Por calle</string>
+    <string name="guess_question_street">¿En qué calle está esta cámara?</string>
+    <string name="guess_camera_is">Esta cámara es:</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

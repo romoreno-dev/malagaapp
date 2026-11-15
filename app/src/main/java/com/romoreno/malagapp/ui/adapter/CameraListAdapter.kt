@@ -12,6 +12,8 @@ class CameraListAdapter(private val whenCameraItemSelected: WhenCameraItemSelect
                         private var list: List<CameraWithDistrict> = emptyList())  :
     RecyclerView.Adapter<CameraListViewHolder>() {
 
+    fun firstId(): Int? = list.firstOrNull()?.cameraEntity?.id
+
     fun updateList(newList: List<CameraWithDistrict>) {
         val productDiff = CameraDiffUtil(list, newList)
         val result = DiffUtil.calculateDiff(productDiff)

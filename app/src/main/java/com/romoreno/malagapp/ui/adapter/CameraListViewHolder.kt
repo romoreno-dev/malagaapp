@@ -18,8 +18,16 @@ class CameraListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         binding.tvDistrict.text = cameraEntity.district?.name
 
-        binding.tvCameraTitle.text =
-            "${cameraEntity.cameraEntity.description} \n ${cameraEntity.cameraEntity.address}"
+        val camera = cameraEntity.cameraEntity
+        val details = "${camera.description} \n ${camera.address}"
+        binding.tvCameraTitle.text = if (camera.alias.isNullOrBlank()) details
+        else "${camera.alias}\n$details"
+
+        binding.ivEdit.setOnClickListener { whenCameraItemSelected.onEditAliasSelected(camera) }
+        binding.cameraCardView.setOnLongClickListener {
+            whenCameraItemSelected.onEditAliasSelected(camera)
+            true
+        }
 
         binding.cameraCardView.setOnClickListener {
             whenCameraItemSelected.onCardViewSelected(cameraEntity)

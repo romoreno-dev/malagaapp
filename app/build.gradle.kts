@@ -93,7 +93,8 @@ dependencies {
     implementation(libs.datastore.preferences)
 
     // Google Maps
-    implementation(libs.google.maps)
+    // Mapa (OpenStreetMap, sin API key)
+    implementation(libs.osmdroid)
     implementation(libs.google.location)
     implementation(libs.google.places)
 

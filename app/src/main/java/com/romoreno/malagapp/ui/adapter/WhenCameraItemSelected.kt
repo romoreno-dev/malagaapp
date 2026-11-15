@@ -4,4 +4,5 @@ import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 
 data class WhenCameraItemSelected(val onCardViewSelected: (CameraWithDistrict) -> Unit,
-    val onStartSelected: (CameraEntity) -> Unit)
+    val onStartSelected: (CameraEntity) -> Unit,
+    val onEditAliasSelected: (CameraEntity) -> Unit = {})

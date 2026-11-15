@@ -30,6 +30,7 @@ crashlyticsVersion = "3.0.2"
 datastorePreferencesVersion = "1.1.1"
 androidCoreTestingVersion = "2.1.0"
 photoViewVersion = "1.0.2"
+osmdroidVersion = "6.1.20"
 
 
 [libraries]
@@ -69,6 +70,7 @@ firebase-realtime = { group = "com.google.firebase", name = "firebase-database-k
 datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferencesVersion"}
 android-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidCoreTestingVersion"}
 photo-view = { group = "io.getstream", name = "photoview", version.ref = "photoViewVersion"}
+osmdroid = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroidVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

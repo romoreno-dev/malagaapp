@@ -43,5 +43,9 @@ class DatabaseRepositoryImpl @Inject constructor(private val cameraDao: CameraDa
         val favourite = camera.favourite
         val camera = camera.copy(favourite = !favourite)
         cameraDao.updateCamera(camera)
-        }
+    }
+
+    override suspend fun updateAlias(cameraId: Int, alias: String?) {
+        cameraDao.updateAlias(cameraId, alias?.trim()?.takeIf { it.isNotEmpty() })
+    }
 }

@@ -17,10 +17,10 @@ interface CameraDao {
     @Query("SELECT * FROM camera WHERE district_id = :districtNumber ORDER BY favourite DESC, district_id, name")
     fun getCameraListByDistrictNumber(districtNumber: Int): Flow<List<CameraWithDistrict>>
 
-    @Query("SELECT * FROM camera WHERE (name LIKE :keyword OR description LIKE :keyword OR address LIKE :keyword) ORDER BY favourite DESC, district_id, name")
+    @Query("SELECT * FROM camera WHERE (name LIKE :keyword OR description LIKE :keyword OR address LIKE :keyword OR alias LIKE :keyword) ORDER BY favourite DESC, district_id, name")
     fun getCameraListByKeyword(keyword: String): Flow<List<CameraWithDistrict>>
 
-    @Query("SELECT * FROM camera WHERE district_id = :districtNumber AND (name LIKE :keyword OR description LIKE :keyword OR address LIKE :keyword) ORDER BY favourite DESC, district_id, address")
+    @Query("SELECT * FROM camera WHERE district_id = :districtNumber AND (name LIKE :keyword OR description LIKE :keyword OR address LIKE :keyword OR alias LIKE :keyword) ORDER BY favourite DESC, district_id, address")
     fun getCameraListByDistrictNumberAndKeyword(districtNumber: Int, keyword: String): Flow<List<CameraWithDistrict>>
 
     @Query("SELECT * FROM camera ORDER BY favourite DESC, district_id, name")
@@ -35,6 +35,9 @@ interface CameraDao {
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCamera(entity: CameraEntity): Long
+
+    @Query("UPDATE camera SET alias = :alias WHERE id = :id")
+    suspend fun updateAlias(id: Int, alias: String?)
 
     @Transaction
     @Update
