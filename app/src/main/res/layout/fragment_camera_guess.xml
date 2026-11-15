@@ -18,31 +18,6 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/modeGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:checkedButton="@id/btnModeDistrict"
-                app:selectionRequired="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnModeDistrict"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/guess_mode_district" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnModeStreet"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/guess_mode_street" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
             <!-- Siguiente arriba: no hace falta bajar hasta el final para pulsarlo -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnNext"
@@ -133,6 +108,32 @@
                     android:layout_height="200dp"
                     android:layout_marginTop="8dp" />
             </LinearLayout>
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/modeGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:checkedButton="@id/btnModeDistrict"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnModeDistrict"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/guess_mode_district" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnModeStreet"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/guess_mode_street" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
         </LinearLayout>
     </ScrollView>
 
