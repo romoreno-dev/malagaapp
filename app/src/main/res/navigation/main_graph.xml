@@ -16,6 +16,11 @@
         android:label="fragment_camera_map"
         tools:layout="@layout/fragment_camera_map" />
     <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.romoreno.malagapp.ui.GalleryFragment"
+        android:label="fragment_gallery"
+        tools:layout="@layout/fragment_gallery" />
+    <fragment
         android:id="@+id/cameraGuessFragment"
         android:name="com.romoreno.malagapp.ui.CameraGuessFragment"
         android:label="fragment_camera_guess"

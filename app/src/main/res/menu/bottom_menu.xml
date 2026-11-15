@@ -9,6 +9,10 @@
         android:title="@string/camera_map_menu"
         android:icon="@drawable/ic_map" />
     <item
+        android:id="@+id/galleryFragment"
+        android:title="@string/gallery_menu"
+        android:icon="@drawable/ic_gallery" />
+    <item
         android:id="@+id/cameraGuessFragment"
         android:title="@string/camera_guess_menu"
         android:icon="@drawable/ic_search" />
