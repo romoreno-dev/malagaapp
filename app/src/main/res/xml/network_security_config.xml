@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- La camara de la estacion EA7CL solo se sirve por HTTP. Se permite unicamente para ella. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">nuevamalaga.duckdns.org</domain>
+    </domain-config>
+</network-security-config>

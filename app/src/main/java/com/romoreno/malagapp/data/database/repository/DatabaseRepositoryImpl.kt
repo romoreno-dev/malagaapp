@@ -4,6 +4,7 @@ import com.romoreno.malagapp.data.database.dao.CameraDao
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.entities.DistrictEntity
+import com.romoreno.malagapp.data.database.provider.ExtraCameras
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -43,6 +44,10 @@ class DatabaseRepositoryImpl @Inject constructor(private val cameraDao: CameraDa
         val favourite = camera.favourite
         val camera = camera.copy(favourite = !favourite)
         cameraDao.updateCamera(camera)
+    }
+
+    override suspend fun ensureExtraCameras() {
+        cameraDao.insertCamerasIfAbsent(ExtraCameras.ALL)
     }
 
     override suspend fun updateAlias(cameraId: Int, alias: String?) {

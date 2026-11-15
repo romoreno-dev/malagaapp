@@ -43,6 +43,9 @@ interface CameraDao {
     @Update
     suspend fun updateCamera(entity: CameraEntity)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertCamerasIfAbsent(entities: List<CameraEntity>)
+
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCamera(entity: List<CameraEntity>)

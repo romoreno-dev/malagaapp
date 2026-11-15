@@ -50,6 +50,7 @@ class CameraListViewModel @Inject constructor(
                     if (databaseRepository.getAllCameraListWithDistrict().isEmpty()) {
                         databaseRepository.insertCamera(cameraRepository.getCameras())
                     }
+                    databaseRepository.ensureExtraCameras()
                 }
             } catch (e: Exception) {
                 // Sin red: se queda la lista vacia hasta el siguiente intento

@@ -34,6 +34,13 @@ class CameraMapViewModel @Inject constructor(
         }
     }
 
+    fun updateAlias(cameraId: Int, alias: String?) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { databaseRepository.updateAlias(cameraId, alias) }
+            loadCameras()
+        }
+    }
+
     fun loadCameras() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -41,8 +48,9 @@ class CameraMapViewModel @Inject constructor(
                     var list = databaseRepository.getAllCameraListWithDistrict()
                     if (list.isEmpty()) {
                         databaseRepository.insertCamera(cameraRepository.getCameras())
-                        list = databaseRepository.getAllCameraListWithDistrict()
                     }
+                    databaseRepository.ensureExtraCameras()
+                    list = databaseRepository.getAllCameraListWithDistrict()
                     _districts.value = databaseRepository.getDistrictList().sortedBy { it.id }
                     _cameras.value = list
                 } catch (e: Exception) {

@@ -56,8 +56,9 @@ class CameraGuessViewModel @Inject constructor(
                     var list = databaseRepository.getAllCameraListWithDistrict()
                     if (list.isEmpty()) {
                         databaseRepository.insertCamera(cameraRepository.getCameras())
-                        list = databaseRepository.getAllCameraListWithDistrict()
                     }
+                    databaseRepository.ensureExtraCameras()
+                    list = databaseRepository.getAllCameraListWithDistrict()
                     cameras = list
                     districts = databaseRepository.getDistrictList()
                 } catch (e: Exception) {
