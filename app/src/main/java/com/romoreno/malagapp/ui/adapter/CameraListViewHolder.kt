@@ -13,15 +13,20 @@ class CameraListViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun render(
         cameraEntity: CameraWithDistrict,
-        whenCameraItemSelected: WhenCameraItemSelected
+        whenCameraItemSelected: WhenCameraItemSelected,
+        favouritesMode: Boolean = false
     ) {
 
         binding.tvDistrict.text = cameraEntity.district?.name
 
         val camera = cameraEntity.cameraEntity
         val details = "${camera.description} \n ${camera.address}"
-        binding.tvCameraTitle.text = if (camera.alias.isNullOrBlank()) details
-        else "${camera.alias}\n$details"
+        binding.tvCameraTitle.text = when {
+            camera.alias.isNullOrBlank() -> details
+            // Favoritos: o el alias o la calle, no los dos a la vez
+            favouritesMode -> camera.alias
+            else -> "${camera.alias}\n$details"
+        }
 
         binding.ivEdit.setOnClickListener { whenCameraItemSelected.onEditAliasSelected(camera) }
         binding.cameraCardView.setOnLongClickListener {

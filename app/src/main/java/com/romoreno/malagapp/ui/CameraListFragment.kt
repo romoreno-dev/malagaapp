@@ -6,11 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.FrameLayout
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
-import com.google.android.material.textfield.TextInputEditText
-import com.romoreno.malagapp.R
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.romoreno.malagapp.R
 import com.romoreno.malagapp.data.database.dto.CameraWithDistrict
 import com.romoreno.malagapp.data.database.entities.CameraEntity
 import com.romoreno.malagapp.data.database.repository.DatabaseRepository
@@ -66,6 +63,7 @@ class CameraListFragment : Fragment() {
             onStartSelected = { onStarSelected(it) },
             onEditAliasSelected = { showAliasDialog(it) }
         ))
+        cameraAdapter.favouritesMode = onlyFavourites
         binding.rvCamera.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = cameraAdapter
@@ -88,28 +86,18 @@ class CameraListFragment : Fragment() {
 
     private fun onStarSelected(cameraEntity: CameraEntity) {
         cameraListViewModel.markCameraAsFavourite(cameraEntity)
+        // Al marcar (no al desmarcar) se ofrece ponerle alias; en blanco no se toca nada
+        if (!cameraEntity.favourite) {
+            AliasDialog.show(requireContext(), cameraEntity, skipBlank = true) {
+                cameraListViewModel.updateAlias(cameraEntity.id, it)
+            }
+        }
     }
 
     private fun showAliasDialog(camera: CameraEntity) {
-        val input = TextInputEditText(requireContext()).apply {
-            setText(camera.alias ?: "")
-            setHint(R.string.alias_hint)
-            setSingleLine()
-            setSelection(text?.length ?: 0)
+        AliasDialog.show(requireContext(), camera) {
+            cameraListViewModel.updateAlias(camera.id, it)
         }
-        val container = FrameLayout(requireContext()).apply {
-            val pad = (20 * resources.displayMetrics.density).toInt()
-            setPadding(pad, pad / 2, pad, 0)
-            addView(input)
-        }
-        AlertDialog.Builder(requireContext())
-            .setTitle(camera.description)
-            .setView(container)
-            .setPositiveButton(R.string.alias_save) { _, _ ->
-                cameraListViewModel.updateAlias(camera.id, input.text?.toString())
-            }
-            .setNegativeButton(R.string.alias_cancel, null)
-            .show()
     }
 
     private fun whenCameraItemSelected(camera: CameraWithDistrict) {
@@ -167,6 +155,7 @@ class CameraListFragment : Fragment() {
                     id: Long
                 ) {
                     onlyFavourites = position == 0
+                    cameraAdapter.favouritesMode = onlyFavourites
                     idSeleccionado = if (position >= 2) districts[names[position]] else null
                     cameraListViewModel.searchCameras(
                         idSeleccionado,

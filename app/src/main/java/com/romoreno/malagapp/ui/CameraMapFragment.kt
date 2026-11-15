@@ -143,6 +143,12 @@ class CameraMapFragment : Fragment() {
                 setOnMarkerClickListener { _, _ ->
                     CameraDialog.show(requireContext(), viewLifecycleOwner, camera) {
                         viewModel.toggleFavourite(it)
+                        // Al marcar (no al desmarcar) se ofrece ponerle alias; en blanco, nada
+                        if (!it.favourite) {
+                            AliasDialog.show(requireContext(), it, skipBlank = true) { alias ->
+                                viewModel.updateAlias(it.id, alias)
+                            }
+                        }
                     }
                     true
                 }

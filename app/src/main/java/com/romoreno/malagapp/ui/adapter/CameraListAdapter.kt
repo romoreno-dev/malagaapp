@@ -12,6 +12,18 @@ class CameraListAdapter(private val whenCameraItemSelected: WhenCameraItemSelect
                         private var list: List<CameraWithDistrict> = emptyList())  :
     RecyclerView.Adapter<CameraListViewHolder>() {
 
+    /**
+     * En la vista de favoritos se muestra o el alias o la calle (no ambos). Al cambiarlo hay que
+     * volver a pintar todo: DiffUtil no lo detecta porque los datos de las camaras no cambian.
+     */
+    var favouritesMode: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
     fun firstId(): Int? = list.firstOrNull()?.cameraEntity?.id
 
     fun updateList(newList: List<CameraWithDistrict>) {
@@ -29,7 +41,7 @@ class CameraListAdapter(private val whenCameraItemSelected: WhenCameraItemSelect
     }
 
     override fun onBindViewHolder(holder: CameraListViewHolder, position: Int) {
-        holder.render(list[position], whenCameraItemSelected)
+        holder.render(list[position], whenCameraItemSelected, favouritesMode)
     }
 
     override fun getItemCount() = list.size
